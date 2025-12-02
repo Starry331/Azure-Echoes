@@ -7,7 +7,7 @@ import StoryTree from './StoryTree'
 import SettingsPanel from './SettingsPanel'
 import { preloadSceneAssets, preloadImage } from '../utils/assetLoader'
 
-const MENU_BG = './assets/menu/main_menu.png'
+const MENU_BG = './assets/menu/main_menu.jpg'
 
 export default function TitleScreen({ isEnding = false }) {
   const { startGame, setGameState, saveSlots, settings } = useGameStore()
