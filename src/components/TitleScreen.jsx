@@ -122,30 +122,36 @@ export default function TitleScreen({ isEnding = false }) {
       {/* 渐变遮罩 - 增强文字可读性 */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
       
-      {/* 浮动光效 */}
+      {/* 浮动爱心 */}
       <motion.div 
         className="absolute inset-0 overflow-hidden pointer-events-none"
         initial={{ opacity: 0 }}
         animate={{ opacity: bgLoaded ? 1 : 0 }}
       >
-        <motion.div 
-          className="absolute top-1/4 left-1/4 w-64 md:w-96 h-64 md:h-96 bg-cyan-400/10 rounded-full blur-3xl"
-          animate={{ 
-            x: [0, 30, 0],
-            y: [0, -20, 0],
-            opacity: [0.3, 0.5, 0.3],
-          }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div 
-          className="absolute bottom-1/3 right-1/4 w-48 md:w-72 h-48 md:h-72 bg-pink-400/10 rounded-full blur-3xl"
-          animate={{ 
-            x: [0, -20, 0],
-            y: [0, 30, 0],
-            opacity: [0.2, 0.4, 0.2],
-          }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        />
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute text-pink-300/20"
+            style={{
+              left: `${15 + i * 15}%`,
+              bottom: '-20px',
+              fontSize: `${14 + (i % 3) * 4}px`,
+            }}
+            animate={{
+              y: [0, -window.innerHeight - 50],
+              opacity: [0, 0.4, 0.3, 0],
+              x: [0, (i % 2 === 0 ? 15 : -15), 0],
+            }}
+            transition={{
+              duration: 8 + i * 2,
+              repeat: Infinity,
+              delay: i * 1.5,
+              ease: "easeOut",
+            }}
+          >
+            ♥
+          </motion.div>
+        ))}
       </motion.div>
 
       {/* 标题 - 竖屏时靠上 */}
@@ -153,22 +159,35 @@ export default function TitleScreen({ isEnding = false }) {
         initial={{ y: -30, opacity: 0 }}
         animate={{ y: 0, opacity: bgLoaded ? 1 : 0 }}
         transition={{ delay: 0.3, duration: 0.8 }}
-        className="relative z-10 text-center mb-6 md:mb-16 md:absolute md:top-[15%]"
+        className="relative z-10 text-center mb-6 md:mb-16 md:absolute md:top-[12%]"
       >
         <motion.h1 
-          className="text-4xl sm:text-5xl md:text-7xl font-serif font-bold text-white mb-2 md:mb-4 tracking-wider drop-shadow-lg"
+          className="text-4xl sm:text-5xl md:text-7xl font-serif font-bold mb-2 md:mb-4 tracking-widest"
+          style={{
+            background: 'linear-gradient(180deg, #ffffff 0%, #e0f2fe 40%, #7dd3fc 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            textShadow: 'none',
+            filter: 'drop-shadow(0 2px 8px rgba(125, 211, 252, 0.4))',
+          }}
           animate={{ 
-            textShadow: [
-              "0 0 20px rgba(103, 232, 249, 0.3)",
-              "0 0 40px rgba(103, 232, 249, 0.5)",
-              "0 0 20px rgba(103, 232, 249, 0.3)",
+            filter: [
+              'drop-shadow(0 2px 8px rgba(125, 211, 252, 0.3))',
+              'drop-shadow(0 2px 16px rgba(125, 211, 252, 0.5))',
+              'drop-shadow(0 2px 8px rgba(125, 211, 252, 0.3))',
             ]
           }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         >
           {isEnding ? 'THE END' : scenario.title}
         </motion.h1>
-        <p className="text-base md:text-xl text-white/70 font-light tracking-widest drop-shadow">
+        <p 
+          className="text-base md:text-xl font-light tracking-[0.3em]"
+          style={{
+            color: 'rgba(186, 230, 253, 0.8)',
+            textShadow: '0 1px 4px rgba(0, 0, 0, 0.5)',
+          }}
+        >
           {isEnding ? '感谢游玩' : scenario.subtitle}
         </p>
       </motion.div>
