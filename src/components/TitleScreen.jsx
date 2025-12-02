@@ -5,7 +5,9 @@ import useGameStore from '../store/gameStore'
 import { scenario } from '../data/scenario'
 import StoryTree from './StoryTree'
 import SettingsPanel from './SettingsPanel'
-import { preloadSceneAssets } from '../utils/assetLoader'
+import { preloadSceneAssets, preloadImage } from '../utils/assetLoader'
+
+const MENU_BG = './assets/menu/main_menu.png'
 
 export default function TitleScreen({ isEnding = false }) {
   const { startGame, setGameState, saveSlots, settings } = useGameStore()
@@ -13,9 +15,14 @@ export default function TitleScreen({ isEnding = false }) {
   const [showStoryTree, setShowStoryTree] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [audioStarted, setAudioStarted] = useState(false)
+  const [bgLoaded, setBgLoaded] = useState(false)
   
-  // 预加载第一个场景资源
+  // 预加载主菜单背景和第一个场景资源
   useEffect(() => {
+    // 优先加载主菜单背景
+    preloadImage(MENU_BG).then(() => setBgLoaded(true))
+    
+    // 后台预加载第一个场景
     const firstScene = scenario.scenes['start']
     if (firstScene) {
       preloadSceneAssets(firstScene, firstScene.nextScene, scenario.scenes)
@@ -79,61 +86,121 @@ export default function TitleScreen({ isEnding = false }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 1 }}
-      className="w-full h-full flex flex-col items-center justify-center relative overflow-hidden"
+      transition={{ duration: 0.8 }}
+      className="w-full h-full flex flex-col items-center justify-end md:justify-center relative overflow-hidden"
       onClick={tryPlayAudio}
-      style={{
-        background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%)',
-      }}
     >
-      {/* 背景装饰 */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-500/5 rounded-full blur-3xl" />
-      </div>
-
-      {/* 标题 */}
+      {/* 背景图片 - 带呼吸动画 */}
       <motion.div
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.3, duration: 0.8 }}
-        className="relative z-10 text-center mb-16"
+        className="absolute inset-0"
+        initial={{ opacity: 0, scale: 1.05 }}
+        animate={{ 
+          opacity: bgLoaded ? 1 : 0,
+          scale: [1, 1.02, 1],
+        }}
+        transition={{ 
+          opacity: { duration: 0.8 },
+          scale: { duration: 8, repeat: Infinity, ease: "easeInOut" }
+        }}
       >
-        <h1 className="text-6xl md:text-8xl font-serif font-bold text-white mb-4 tracking-wider">
+        <div 
+          className="w-full h-full bg-cover bg-center md:bg-center bg-no-repeat"
+          style={{ 
+            backgroundImage: `url(${MENU_BG})`,
+            backgroundPosition: 'center 20%',
+          }} 
+        />
+      </motion.div>
+      
+      {/* 加载中背景 */}
+      {!bgLoaded && (
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin" />
+        </div>
+      )}
+      
+      {/* 渐变遮罩 - 增强文字可读性 */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+      
+      {/* 浮动光效 */}
+      <motion.div 
+        className="absolute inset-0 overflow-hidden pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: bgLoaded ? 1 : 0 }}
+      >
+        <motion.div 
+          className="absolute top-1/4 left-1/4 w-64 md:w-96 h-64 md:h-96 bg-cyan-400/10 rounded-full blur-3xl"
+          animate={{ 
+            x: [0, 30, 0],
+            y: [0, -20, 0],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div 
+          className="absolute bottom-1/3 right-1/4 w-48 md:w-72 h-48 md:h-72 bg-pink-400/10 rounded-full blur-3xl"
+          animate={{ 
+            x: [0, -20, 0],
+            y: [0, 30, 0],
+            opacity: [0.2, 0.4, 0.2],
+          }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        />
+      </motion.div>
+
+      {/* 标题 - 竖屏时靠上 */}
+      <motion.div
+        initial={{ y: -30, opacity: 0 }}
+        animate={{ y: 0, opacity: bgLoaded ? 1 : 0 }}
+        transition={{ delay: 0.3, duration: 0.8 }}
+        className="relative z-10 text-center mb-6 md:mb-16 md:absolute md:top-[15%]"
+      >
+        <motion.h1 
+          className="text-4xl sm:text-5xl md:text-7xl font-serif font-bold text-white mb-2 md:mb-4 tracking-wider drop-shadow-lg"
+          animate={{ 
+            textShadow: [
+              "0 0 20px rgba(103, 232, 249, 0.3)",
+              "0 0 40px rgba(103, 232, 249, 0.5)",
+              "0 0 20px rgba(103, 232, 249, 0.3)",
+            ]
+          }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        >
           {isEnding ? 'THE END' : scenario.title}
-        </h1>
-        <p className="text-xl md:text-2xl text-white/60 font-light tracking-widest">
+        </motion.h1>
+        <p className="text-base md:text-xl text-white/70 font-light tracking-widest drop-shadow">
           {isEnding ? '感谢游玩' : scenario.subtitle}
         </p>
       </motion.div>
 
-      {/* 菜单 */}
+      {/* 菜单 - 竖屏时底部 */}
       <motion.div
-        initial={{ y: 50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.6, duration: 0.8 }}
-        className="relative z-10 flex flex-col gap-4"
+        initial={{ y: 30, opacity: 0 }}
+        animate={{ y: 0, opacity: bgLoaded ? 1 : 0 }}
+        transition={{ delay: 0.5, duration: 0.8 }}
+        className="relative z-10 flex flex-col gap-2 md:gap-3 pb-20 md:pb-0 md:absolute md:bottom-[15%] w-full px-6 md:px-0 md:w-auto"
       >
         {menuItems.map((item, index) => (
           <motion.button
             key={item.label}
-            initial={{ x: -30, opacity: 0 }}
+            initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.8 + index * 0.1 }}
+            transition={{ delay: 0.6 + index * 0.08 }}
             onClick={item.action}
             disabled={item.disabled}
+            whileHover={{ scale: 1.02, x: 5 }}
+            whileTap={{ scale: 0.98 }}
             className={`
-              group flex items-center gap-4 px-8 py-4 
-              bg-white/5 hover:bg-white/15 
-              border border-white/10 hover:border-white/30
-              rounded-lg backdrop-blur-sm
+              group flex items-center gap-3 md:gap-4 px-5 md:px-8 py-3 md:py-4 
+              bg-black/30 hover:bg-black/50 
+              border border-white/20 hover:border-cyan-400/50
+              rounded-xl backdrop-blur-md
               transition-all duration-300 ease-out
               ${item.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
             `}
           >
-            <item.icon className="w-6 h-6 text-white/70 group-hover:text-white transition-colors" />
-            <span className="text-lg text-white/80 group-hover:text-white font-medium tracking-wide transition-colors">
+            <item.icon className="w-5 h-5 md:w-6 md:h-6 text-cyan-300/80 group-hover:text-cyan-300 transition-colors" />
+            <span className="text-base md:text-lg text-white/90 group-hover:text-white font-medium tracking-wide transition-colors">
               {item.label}
             </span>
           </motion.button>
@@ -143,9 +210,9 @@ export default function TitleScreen({ isEnding = false }) {
       {/* 版权信息 */}
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
-        className="absolute bottom-8 text-white/30 text-sm"
+        animate={{ opacity: bgLoaded ? 1 : 0 }}
+        transition={{ delay: 1 }}
+        className="absolute bottom-4 md:bottom-6 text-white/40 text-xs md:text-sm z-10"
       >
         Made with @Starry | 蔚蓝回响 Azure Echoes
       </motion.div>
