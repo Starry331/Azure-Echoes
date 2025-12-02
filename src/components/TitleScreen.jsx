@@ -1,10 +1,51 @@
-import { motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Play, BookOpen, Settings, FolderOpen } from 'lucide-react'
 import useGameStore from '../store/gameStore'
 import { scenario } from '../data/scenario'
+import StoryTree from './StoryTree'
+import SettingsPanel from './SettingsPanel'
+import { preloadSceneAssets } from '../utils/assetLoader'
 
 export default function TitleScreen({ isEnding = false }) {
-  const { startGame, setGameState, saveSlots } = useGameStore()
+  const { startGame, setGameState, saveSlots, settings } = useGameStore()
+  const audioRef = useRef(null)
+  const [showStoryTree, setShowStoryTree] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
+  const [audioStarted, setAudioStarted] = useState(false)
+  
+  // 预加载第一个场景资源
+  useEffect(() => {
+    const firstScene = scenario.scenes['start']
+    if (firstScene) {
+      preloadSceneAssets(firstScene, firstScene.nextScene, scenario.scenes)
+    }
+  }, [])
+  
+  // 更新音量
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = settings.bgmVolume
+    }
+  }, [settings.bgmVolume])
+
+  // 用户交互后播放BGM
+  const tryPlayAudio = () => {
+    if (audioRef.current && !audioStarted) {
+      audioRef.current.play().then(() => {
+        setAudioStarted(true)
+      }).catch(() => {})
+    }
+  }
+
+  // 清理
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause()
+      }
+    }
+  }, [])
 
   const hasSaveData = saveSlots.some(slot => slot !== null)
 
@@ -21,15 +62,15 @@ export default function TitleScreen({ isEnding = false }) {
     }] : []),
     { 
       icon: BookOpen, 
-      label: '回顾历史', 
-      action: () => console.log('History'),
-      disabled: true,
+      label: '剧情回顾', 
+      action: () => setShowStoryTree(true),
+      disabled: false,
     },
     { 
       icon: Settings, 
       label: '游戏设置', 
-      action: () => console.log('Settings'),
-      disabled: true,
+      action: () => setShowSettings(true),
+      disabled: false,
     },
   ]
 
@@ -40,6 +81,7 @@ export default function TitleScreen({ isEnding = false }) {
       exit={{ opacity: 0 }}
       transition={{ duration: 1 }}
       className="w-full h-full flex flex-col items-center justify-center relative overflow-hidden"
+      onClick={tryPlayAudio}
       style={{
         background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%)',
       }}
@@ -107,6 +149,23 @@ export default function TitleScreen({ isEnding = false }) {
       >
         Made with @Starry | 蔚蓝回响 Azure Echoes
       </motion.div>
+      
+      {/* 主菜单BGM */}
+      <audio ref={audioRef} src="./assets/bgm/menu.mp3" loop preload="auto" />
+      
+      {/* 剧情树弹窗 */}
+      <AnimatePresence>
+        {showStoryTree && (
+          <StoryTree onClose={() => setShowStoryTree(false)} />
+        )}
+      </AnimatePresence>
+
+      {/* 设置面板 */}
+      <AnimatePresence>
+        {showSettings && (
+          <SettingsPanel onClose={() => setShowSettings(false)} />
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }

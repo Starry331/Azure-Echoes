@@ -1,9 +1,12 @@
-import { motion } from 'framer-motion'
-import { X, Save, FolderOpen, Home, Settings } from 'lucide-react'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { X, Save, FolderOpen, Home, Settings, GitBranch } from 'lucide-react'
 import useGameStore from '../store/gameStore'
+import StoryTree from './StoryTree'
 
 export default function MenuOverlay() {
   const { setGameState, returnToTitle, saveGame, loadGame, saveSlots } = useGameStore()
+  const [showStoryTree, setShowStoryTree] = useState(false)
 
   const closeMenu = () => setGameState('playing')
 
@@ -89,7 +92,14 @@ export default function MenuOverlay() {
         </div>
 
         {/* 底部操作 */}
-        <div className="p-6 border-t border-white/10 flex gap-4">
+        <div className="p-6 border-t border-white/10 flex flex-wrap gap-4">
+          <button
+            onClick={() => setShowStoryTree(true)}
+            className="flex-1 py-3 px-4 bg-cyan-500/20 hover:bg-cyan-500/40 text-cyan-300 rounded-lg transition-colors flex items-center justify-center gap-2"
+          >
+            <GitBranch className="w-5 h-5" />
+            剧情回顾
+          </button>
           <button
             onClick={closeMenu}
             className="flex-1 py-3 px-4 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
@@ -105,6 +115,13 @@ export default function MenuOverlay() {
           </button>
         </div>
       </motion.div>
+
+      {/* 剧情树弹窗 */}
+      <AnimatePresence>
+        {showStoryTree && (
+          <StoryTree onClose={() => setShowStoryTree(false)} />
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }

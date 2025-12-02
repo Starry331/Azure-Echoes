@@ -1,10 +1,43 @@
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { preloadImage, isAssetLoaded } from '../utils/assetLoader'
 
-export default function CharacterSprite({ dialog }) {
-  if (!dialog?.sprite) return null
+export default function CharacterSprite({ dialog, sceneId }) {
+  // 保存当前显示的立绘和位置
+  const [currentSprite, setCurrentSprite] = useState(null)
+  const [currentPosition, setCurrentPosition] = useState('center')
+  const [spriteLoaded, setSpriteLoaded] = useState(false)
+
+  // 场景切换时重置立绘
+  useEffect(() => {
+    setCurrentSprite(null)
+    setCurrentPosition('center')
+    setSpriteLoaded(false)
+  }, [sceneId])
+
+  // 同一场景内，只有出现新立绘时才切换
+  useEffect(() => {
+    if (dialog?.sprite) {
+      // 检查是否已缓存
+      if (isAssetLoaded(dialog.sprite)) {
+        setCurrentSprite(dialog.sprite)
+        setCurrentPosition(dialog.position || 'center')
+        setSpriteLoaded(true)
+      } else {
+        setSpriteLoaded(false)
+        preloadImage(dialog.sprite).then(() => {
+          setCurrentSprite(dialog.sprite)
+          setCurrentPosition(dialog.position || 'center')
+          setSpriteLoaded(true)
+        })
+      }
+    }
+  }, [dialog?.sprite, dialog?.position])
+
+  if (!currentSprite) return null
 
   const getPosition = () => {
-    switch (dialog.position) {
+    switch (currentPosition) {
       case 'left':
         return 'left-[10%]'
       case 'right':
@@ -15,30 +48,28 @@ export default function CharacterSprite({ dialog }) {
     }
   }
 
+  // 对话框高度：移动端 140px + padding 16px = 156px，桌面端 160px + padding 32px = 192px
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        key={dialog.sprite}
-        initial={{ opacity: 0, y: 50, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -20, scale: 0.95 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-        className={`absolute bottom-0 ${getPosition()} pointer-events-none`}
+        key={currentSprite}
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: spriteLoaded ? 1 : 0, y: spriteLoaded ? 0 : 30 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+        className={`absolute ${getPosition()} pointer-events-none`}
+        style={{ bottom: 'calc(156px)' }}
       >
         <img
-          src={dialog.sprite}
+          src={currentSprite}
           alt="Character"
-          className="max-h-[85vh] w-auto object-contain drop-shadow-2xl"
+          className="max-h-[calc(100vh-200px)] md:max-h-[calc(100vh-240px)] w-auto object-contain drop-shadow-2xl"
+          loading="lazy"
+          decoding="async"
           onError={(e) => {
-            // 图片加载失败时显示占位符
             e.target.style.display = 'none'
           }}
         />
-        
-        {/* 立绘占位符（当图片未加载时显示） */}
-        <div className="absolute inset-0 flex items-end justify-center">
-          <div className="w-64 h-96 bg-gradient-to-t from-purple-500/20 to-transparent rounded-t-full opacity-0" />
-        </div>
       </motion.div>
     </AnimatePresence>
   )

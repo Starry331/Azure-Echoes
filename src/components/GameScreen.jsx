@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import useGameStore from '../store/gameStore'
 import { scenario } from '../data/scenario'
@@ -6,6 +6,8 @@ import DialogBox from './DialogBox'
 import ChoiceMenu from './ChoiceMenu'
 import CharacterSprite from './CharacterSprite'
 import GameUI from './GameUI'
+import AffectionDisplay from './AffectionDisplay'
+import { preloadSceneAssets, preloadImage, isAssetLoaded } from '../utils/assetLoader'
 
 export default function GameScreen() {
   const {
@@ -14,10 +16,32 @@ export default function GameScreen() {
     nextDialog,
     isTextComplete,
     showChoices,
+    currentSceneId,
   } = useGameStore()
+  
+  const [bgLoaded, setBgLoaded] = useState(false)
 
   const scene = getCurrentScene()
   const dialog = getCurrentDialog()
+
+  // 预加载当前场景和下一场景资源
+  useEffect(() => {
+    if (!scene) return
+    
+    // 检查背景是否已加载
+    if (scene.background && isAssetLoaded(scene.background)) {
+      setBgLoaded(true)
+    } else {
+      setBgLoaded(false)
+    }
+    
+    // 预加载资源
+    preloadSceneAssets(scene, scene.nextScene, scenario.scenes).then(() => {
+      if (scene.background) {
+        preloadImage(scene.background).then(() => setBgLoaded(true))
+      }
+    })
+  }, [scene, currentSceneId])
 
   // 处理点击事件
   const handleClick = useCallback(() => {
@@ -61,10 +85,10 @@ export default function GameScreen() {
       <AnimatePresence mode="wait">
         <motion.div
           key={scene.background}
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: bgLoaded ? 1 : 0 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.5 }}
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage: scene.background 
@@ -76,9 +100,29 @@ export default function GameScreen() {
           <div className="absolute inset-0 bg-black/20" />
         </motion.div>
       </AnimatePresence>
+      
+      {/* 加载指示器 */}
+      <AnimatePresence>
+        {!bgLoaded && scene.background && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-slate-900 to-slate-800"
+          >
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-8 h-8 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin" />
+              <span className="text-cyan-400/70 text-sm">Loading...</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* 角色立绘 */}
-      <CharacterSprite dialog={dialog} />
+      <CharacterSprite dialog={dialog} sceneId={currentSceneId} />
+
+      {/* 好感度显示 */}
+      <AffectionDisplay />
 
       {/* 游戏UI（菜单按钮等） */}
       <GameUI />

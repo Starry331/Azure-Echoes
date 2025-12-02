@@ -62,19 +62,22 @@ export default function DialogBox({ dialog }) {
 
   if (!dialog || dialog.choices) return null
 
+  // 固定对话框高度
+  const DIALOG_HEIGHT = 'h-[140px] md:h-[160px]'
+
   return (
     <motion.div
       initial={{ y: 50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="absolute bottom-0 left-0 right-0 p-4 md:p-8"
+      className="absolute bottom-0 left-0 right-0 p-2 md:p-4"
     >
       <div className="max-w-4xl mx-auto">
-        {/* 对话框背景 */}
-        <div className="relative bg-gradient-to-b from-black/80 to-black/90 backdrop-blur-md rounded-xl border border-white/10 overflow-hidden">
+        {/* 对话框背景 - 固定高度 */}
+        <div className={`relative ${DIALOG_HEIGHT} bg-gradient-to-b from-black/70 to-black/85 md:from-black/80 md:to-black/90 backdrop-blur-md rounded-xl border border-white/10 overflow-hidden`}>
           {/* 装饰边框 */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-pink-500/50 to-transparent" />
           
-          <div className="p-6">
+          <div className="p-3 md:p-4 h-full flex flex-col">
             {/* 角色名 */}
             <AnimatePresence mode="wait">
               {character && (
@@ -83,10 +86,10 @@ export default function DialogBox({ dialog }) {
                   initial={{ x: -20, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   exit={{ x: 20, opacity: 0 }}
-                  className="mb-3"
+                  className="mb-2 shrink-0"
                 >
                   <span 
-                    className="text-lg font-bold tracking-wider px-4 py-1 rounded-full"
+                    className="text-sm md:text-base font-bold tracking-wider px-3 py-0.5 rounded-full"
                     style={{ 
                       color: character.color,
                       backgroundColor: `${character.color}20`,
@@ -99,11 +102,11 @@ export default function DialogBox({ dialog }) {
             </AnimatePresence>
 
             {/* 对话文本 */}
-            <div className="min-h-[80px]">
-              <p className="text-white text-lg md:text-xl leading-relaxed tracking-wide font-serif">
+            <div className="flex-1 overflow-y-auto">
+              <p className="text-white text-sm md:text-lg leading-relaxed tracking-wide font-serif">
                 {currentText}
                 {!isTextComplete && (
-                  <span className="inline-block w-0.5 h-5 bg-white/70 ml-1 animate-pulse" />
+                  <span className="inline-block w-0.5 h-4 bg-white/70 ml-1 animate-pulse" />
                 )}
               </p>
             </div>
