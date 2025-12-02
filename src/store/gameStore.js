@@ -145,16 +145,35 @@ const useGameStore = create(
               isTextComplete: false,
               unlockedScenes: newUnlocked,
             })
+            // 检查新场景第一个对话是否是选项
+            const newScene = scenario.scenes[scene.nextScene]
+            if (newScene?.dialogs[0]?.choices) {
+              set({
+                showChoices: true,
+                currentChoices: newScene.dialogs[0].choices,
+                isTextComplete: true,
+              })
+            }
           } else {
             // 游戏结束
             set({ gameState: 'ending' })
           }
         } else {
+          const nextIndex = currentDialogIndex + 1
+          const nextDialog = scene.dialogs[nextIndex]
           set({
-            currentDialogIndex: currentDialogIndex + 1,
+            currentDialogIndex: nextIndex,
             displayedText: '',
             isTextComplete: false,
           })
+          // 检查下一个对话是否是纯选项对话（没有text只有choices）
+          if (nextDialog?.choices && !nextDialog?.text) {
+            set({
+              showChoices: true,
+              currentChoices: nextDialog.choices,
+              isTextComplete: true,
+            })
+          }
         }
       },
 

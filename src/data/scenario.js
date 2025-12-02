@@ -1330,7 +1330,7 @@ export const scenario = {
         {
           character: "xiyin",
           text: "是……这样吗？感觉后背凉飕飕的……",
-          sprite: "./assets/characters/heroine/back.png",
+          sprite: "./assets/characters/heroine/underwear_back.png",
         },
         {
           character: null,
@@ -1359,7 +1359,7 @@ export const scenario = {
         {
           character: "xiyin",
           text: "这就是……那种痛觉的来源吗？",
-          sprite: "./assets/characters/heroine/back.png",
+          sprite: "./assets/characters/heroine/underwear_back.png",
         },
         {
           character: null,
