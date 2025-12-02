@@ -2083,7 +2083,7 @@ export const scenario = {
         },
         {
           character: null,
-          text: "我正看着货架，突然听到身后传来"哗啦"一声纸张撕裂的声音。",
+          text: "我正看着货架，突然听到身后传来『哗啦』一声纸张撕裂的声音。",
         },
         {
           character: null,
