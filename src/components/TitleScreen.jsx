@@ -131,19 +131,21 @@ export default function TitleScreen({ isEnding = false }) {
         {[...Array(6)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute text-pink-300/20"
+            className="absolute"
             style={{
               left: `${15 + i * 15}%`,
               bottom: '-20px',
-              fontSize: `${14 + (i % 3) * 4}px`,
+              fontSize: `${16 + (i % 3) * 5}px`,
+              color: '#f9a8d4',
+              textShadow: '0 0 8px #f472b6, 0 0 16px #ec4899, 0 0 24px #db2777',
             }}
             animate={{
               y: [0, -window.innerHeight - 50],
-              opacity: [0, 0.4, 0.3, 0],
+              opacity: [0, 0.8, 0.6, 0],
               x: [0, (i % 2 === 0 ? 15 : -15), 0],
             }}
             transition={{
-              duration: 8 + i * 2,
+              duration: 10 + i * 2,
               repeat: Infinity,
               delay: i * 1.5,
               ease: "easeOut",
@@ -164,17 +166,14 @@ export default function TitleScreen({ isEnding = false }) {
         <motion.h1 
           className="text-4xl sm:text-5xl md:text-7xl font-serif font-bold mb-2 md:mb-4 tracking-widest"
           style={{
-            background: 'linear-gradient(180deg, #ffffff 0%, #e0f2fe 40%, #7dd3fc 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            textShadow: 'none',
-            filter: 'drop-shadow(0 2px 8px rgba(125, 211, 252, 0.4))',
+            color: '#ffffff',
+            textShadow: '0 0 20px rgba(125, 211, 252, 0.8), 0 0 40px rgba(125, 211, 252, 0.5), 0 4px 8px rgba(0, 0, 0, 0.5)',
           }}
           animate={{ 
-            filter: [
-              'drop-shadow(0 2px 8px rgba(125, 211, 252, 0.3))',
-              'drop-shadow(0 2px 16px rgba(125, 211, 252, 0.5))',
-              'drop-shadow(0 2px 8px rgba(125, 211, 252, 0.3))',
+            textShadow: [
+              '0 0 20px rgba(125, 211, 252, 0.6), 0 0 40px rgba(125, 211, 252, 0.4), 0 4px 8px rgba(0, 0, 0, 0.5)',
+              '0 0 30px rgba(125, 211, 252, 1), 0 0 60px rgba(125, 211, 252, 0.7), 0 4px 8px rgba(0, 0, 0, 0.5)',
+              '0 0 20px rgba(125, 211, 252, 0.6), 0 0 40px rgba(125, 211, 252, 0.4), 0 4px 8px rgba(0, 0, 0, 0.5)',
             ]
           }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -184,8 +183,8 @@ export default function TitleScreen({ isEnding = false }) {
         <p 
           className="text-base md:text-xl font-light tracking-[0.3em]"
           style={{
-            color: 'rgba(186, 230, 253, 0.8)',
-            textShadow: '0 1px 4px rgba(0, 0, 0, 0.5)',
+            color: '#e0f2fe',
+            textShadow: '0 0 10px rgba(125, 211, 252, 0.5), 0 2px 4px rgba(0, 0, 0, 0.6)',
           }}
         >
           {isEnding ? '感谢游玩' : scenario.subtitle}
