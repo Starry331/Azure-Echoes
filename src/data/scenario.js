@@ -2214,7 +2214,7 @@ export const scenario = {
         {
           character: "xiyin",
           text: "刚才的你……看起来有一点点……帅气。",
-          sprite: "./assets/characters/heroine/underwear_shy.png",
+          sprite: "./assets/characters/heroine/shy.png",
         },
         {
           character: null,

@@ -9,32 +9,19 @@ const storyNodes = [
   { id: 'start', title: '序章', subtitle: '潮汐的赠礼', scene: 'start', row: 0, col: 1, children: ['chapter1'] },
   { id: 'chapter1', title: '第一章', subtitle: '陆地上的第一口空气', scene: 'chapter1', row: 1, col: 1, children: ['chapter2'] },
   { id: 'chapter2', title: '第二章', subtitle: '危险的温度', scene: 'chapter2', row: 2, col: 1, children: ['chapter3'] },
-  { id: 'chapter3', title: '第三章', subtitle: '干涸的焦虑', scene: 'chapter3', row: 3, col: 1, children: ['chapter3_trueRoute', 'chapter3_deathRoute', 'chapter3_badRoute'] },
-  
-  // 第三章分支
-  { id: 'chapter3_trueRoute', title: '照顾天性', subtitle: '真/好结局路线', scene: 'chapter3_trueRoute', row: 4, col: 0, children: ['chapter4'] },
-  { id: 'chapter3_deathRoute', title: '精神安慰', subtitle: '死亡结局路线', scene: 'chapter3_deathRoute', row: 4, col: 1, children: ['chapter4'] },
-  { id: 'chapter3_badRoute', title: '强迫适应', subtitle: '坏结局路线', scene: 'chapter3_badRoute', row: 4, col: 2, children: ['chapter4'] },
+  { id: 'chapter3', title: '第三章', subtitle: '干涸的焦虑', scene: 'chapter3', row: 3, col: 1, children: ['chapter4'] },
   
   // 第四章
-  { id: 'chapter4', title: '第四章', subtitle: '清晨的不速之客', scene: 'chapter4', row: 5, col: 1, children: ['chapter4_cousin', 'chapter4_girlfriend', 'chapter4_hide'] },
-  { id: 'chapter4_cousin', title: '远房表妹', subtitle: '', scene: 'chapter4_cousin', row: 6, col: 0, children: ['chapter5'] },
-  { id: 'chapter4_girlfriend', title: '女朋友', subtitle: '', scene: 'chapter4_girlfriend', row: 6, col: 1, children: ['chapter5'] },
-  { id: 'chapter4_hide', title: '藏起来', subtitle: '', scene: 'chapter4_hide', row: 6, col: 2, children: ['chapter5'] },
+  { id: 'chapter4', title: '第四章', subtitle: '清晨的不速之客', scene: 'chapter4', row: 4, col: 1, children: ['chapter5'] },
   
   // 第五章
-  { id: 'chapter5', title: '第五章', subtitle: '鳞片下的秘密', scene: 'chapter5', row: 7, col: 1, children: ['chapter5_underwear', 'chapter5_tshirt'] },
-  { id: 'chapter5_underwear', title: '内衣路线', subtitle: '', scene: 'chapter5_underwear', row: 8, col: 0, children: ['chapter5_examine_underwear'] },
-  { id: 'chapter5_tshirt', title: 'T恤路线', subtitle: '', scene: 'chapter5_tshirt', row: 8, col: 2, children: ['chapter5_examine_tshirt'] },
-  { id: 'chapter5_examine_underwear', title: '检查背部', subtitle: '', scene: 'chapter5_examine_underwear', row: 9, col: 0, children: ['chapter6'] },
-  { id: 'chapter5_examine_tshirt', title: '检查背部', subtitle: '', scene: 'chapter5_examine_tshirt', row: 9, col: 2, children: ['chapter6'] },
+  { id: 'chapter5', title: '第五章', subtitle: '鳞片下的秘密', scene: 'chapter5', row: 5, col: 1, children: ['chapter6'] },
   
   // 第六章
-  { id: 'chapter6', title: '第六章', subtitle: '外面的世界', scene: 'chapter6', row: 10, col: 1, children: ['chapter6_store'] },
-  { id: 'chapter6_store', title: '便利店', subtitle: '', scene: 'chapter6_store', row: 11, col: 1, children: ['chapter7'] },
+  { id: 'chapter6', title: '第六章', subtitle: '外面的世界', scene: 'chapter6', row: 6, col: 1, children: ['chapter7'] },
   
   // 第七章（待续）
-  { id: 'chapter7', title: '第七章', subtitle: '待续...', scene: 'chapter7', row: 12, col: 1, children: [] },
+  { id: 'chapter7', title: '第七章', subtitle: '待续...', scene: 'chapter7', row: 7, col: 1, children: [] },
 ]
 
 // 节点尺寸常量
