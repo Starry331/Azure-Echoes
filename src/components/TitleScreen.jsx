@@ -16,16 +16,28 @@ export default function TitleScreen({ isEnding = false }) {
   const [showSettings, setShowSettings] = useState(false)
   const [audioStarted, setAudioStarted] = useState(false)
   const [bgLoaded, setBgLoaded] = useState(false)
+  const [audioReady, setAudioReady] = useState(false)
   
-  // 预加载主菜单背景和第一个场景资源
+  // 立即显示背景（使用 img onload）
   useEffect(() => {
-    // 优先加载主菜单背景
-    preloadImage(MENU_BG).then(() => setBgLoaded(true))
+    const img = new Image()
+    img.onload = () => setBgLoaded(true)
+    img.src = MENU_BG
     
-    // 后台预加载第一个场景
-    const firstScene = scenario.scenes['start']
-    if (firstScene) {
-      preloadSceneAssets(firstScene, firstScene.nextScene, scenario.scenes)
+    // 延迟加载音频，不阻塞页面
+    const timer = setTimeout(() => setAudioReady(true), 500)
+    
+    // 后台预加载第一个场景（延迟执行）
+    const sceneTimer = setTimeout(() => {
+      const firstScene = scenario.scenes['start']
+      if (firstScene) {
+        preloadSceneAssets(firstScene, firstScene.nextScene, scenario.scenes)
+      }
+    }, 1000)
+    
+    return () => {
+      clearTimeout(timer)
+      clearTimeout(sceneTimer)
     }
   }, [])
   
@@ -235,8 +247,10 @@ export default function TitleScreen({ isEnding = false }) {
         Made with @Starry | 蔚蓝回响 Azure Echoes
       </motion.div>
       
-      {/* 主菜单BGM */}
-      <audio ref={audioRef} src="./assets/bgm/menu.mp3" loop preload="auto" />
+      {/* 主菜单BGM - 延迟加载 */}
+      {audioReady && (
+        <audio ref={audioRef} src="./assets/bgm/menu.mp3" loop preload="none" />
+      )}
       
       {/* 剧情树弹窗 */}
       <AnimatePresence>
